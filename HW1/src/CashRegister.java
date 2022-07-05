@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -20,11 +21,10 @@ public class CashRegister {
     private static double totalSales = 0;
     private static int totalTransactions = 0;
     private static double dailySales = 0;
-    static Scanner input;
-    private static ArrayList<String> transactionList = new ArrayList<String>();
-    // You stated to use arrays for the item data. This isn't necessarily the "item data"
-    // but just a list of strings containing the item list.
-    // The actual item data in the Item class is arrays
+    private static Scanner input;
+    private static Double[] prices = new Double[100];
+    private static String[] names = new String[100];
+    private static int[] quantities = new int[100];
 
     /**
      * Main method
@@ -46,7 +46,6 @@ public class CashRegister {
                     // Create new item object
                     Item item = new Item();
                     // Reset variables for each transaction
-                    resetVariables();
 
                     System.out.print("Enter product code: ");
                     // Get code from user
@@ -66,8 +65,8 @@ public class CashRegister {
                     }
 
                     // Code is valid, get the name and price of the item
-                    String name = item.getName(selectedCode);
-                    double price = item.getPrice(selectedCode);
+                    String name = item.getName(selectedCode - 1);
+                    double price = item.getPrice(selectedCode - 1);
 
                     System.out.println("         Item name: " + name);
 
@@ -84,13 +83,37 @@ public class CashRegister {
 
                     // Quantity is valid, get the total price of the item and add it to the totalSales
                     total = quantity * price;
-                    totalSales = totalSales + total;
                     System.out.println("       Total price: $   " + String.format("%.2f", total));
 
                     // Increment the total transactions and add the transaction to the transactionList for printing
                     totalTransactions++;
-                    String transactionStr = String.format("%5d  %1s        $   %4.2f", quantity, name, total);
-                    transactionList.add(transactionStr);
+//                    String transactionStr = String.format("%5d  %1s        $   %4.2f", quantity, name, total);
+
+                    // Loop through the array of names and see if the name is already in the array
+                    // If so add the quantity to the array of quantities.
+                    // If it doesn't exist, add the name, quantity and price to the array of names, quantities and prices.
+                    int index = 0;
+                    boolean found = false;
+                    for(int i = 0; i < names.length; i++) {
+                        if(names[i] == null) {
+                            break;
+                        }
+                        if(names[i].equals(name)) {
+                            quantities[i] = quantities[i] + quantity;
+                            prices[i] = quantities[i] * price;
+                            index = i;
+                            found = true;
+                            break;
+                        }
+                        index++;
+                    }
+
+                    if(!found) {
+                        names[index] = name;
+                        quantities[index] = quantity;
+                        prices[index] = quantity * price;
+                    }
+
 
                 } while (selectedCode != -1);
 
@@ -175,12 +198,15 @@ public class CashRegister {
         System.out.println("----------------------------");
         System.out.println("Items list:");
 
-        // Sort through the transactionList
-        Collections.sort(transactionList);
+        // Loop through the names array and print the name, quantity and price
+        for(int i = 0; i < names.length; i++) {
+            if(names[i] == null) {
+                break;
+            } else {
+                totalSales += prices[i];
+                System.out.printf(String.format("%6d %-13s$%8.2f\n", quantities[i], names[i], prices[i]));
 
-        // Loop through transactionList and print each item
-        for(int i = 0; i < transactionList.size(); i++) {
-            System.out.println(transactionList.get(i));
+            }
         }
 
         // Get total with tax and save this to dailySales
@@ -205,6 +231,7 @@ public class CashRegister {
         System.out.println("Change              $   " + String.format("%.2f", change));
 
         System.out.println("----------------------------");
+        resetVariables();
     }
 
     /**
@@ -219,6 +246,8 @@ public class CashRegister {
         totalTax = 0;
         totalSales = 0;
         totalTransactions = 0;
-        transactionList = new ArrayList<String>();
+        prices = new Double[100];
+        names = new String[100];
+        quantities = new int[100];
     }
 }
