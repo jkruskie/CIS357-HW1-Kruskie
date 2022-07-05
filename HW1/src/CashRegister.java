@@ -7,7 +7,7 @@ import java.util.Scanner;
 // Course: CIS357
 // Due date: 07/05/2022
 // Name: Justin Kruskie
-// GitHub: github.com/jkruskie
+// GitHub: https://github.com/jkruskie/CIS357-HW1-Kruskie
 // Instructor: Il-Hyung Cho
 // Program description: Emulate cash register at a Grocery Store
 
